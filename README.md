@@ -4,12 +4,56 @@
 
 Este proyecto trata sobre la creación de una función que permite leer una línea de un archivo descriptor de una sola vez.
 
-La función recibe un descriptor de archivo y devolvera la siguiente línea del archivo como una cadena de caracteres terminada en null.
+La función recibe un descriptor de archivo y devolvera la siguiente línea del archivo como una cadena de caracteres terminada en null o `\n`.
 
 <b>Prototipo de la función:</b>
 
 
 	char	*get_next_line(int fd)
+
+En esta función le enviamos el `int fd` (File Descriptor). Un fd es simplemente un número entero que el sistema operativo usa para identificar un canal de comunicación abierto:
+
+* `0` (Standard Input / stdin): Es el teclado. Si lees de aquí, el programa espera a que escribas algo.
+* `1` (Standard Output / stdout): Es la pantalla (salida normal).
+* `2` (Standard Error / stderr): Es la pantalla también, pero reservada para mensajes de error.
+* `3` en adelante: Son archivos que tú abres con la función open(). Por ejemplo, si abres texto.txt, el sistema te dará el fd 3. Si abres otro, el 4, y así.
+
+Dentro de nuestra función utilizaremos variables `static`.
+
+El comportamiento de la función puede depender de varios factores, si el fd que le enviamos es `v0`y BUFFER_SIZE `<= 0`entonces devolvemos NULL;
+
+
+* ### ¿Qué es el BUFFER_SIZE?
+
+	Si BUFFER_SIZE=1, lees el archivo letra a letra (muy lento).
+
+	Si BUFFER_SIZE=100, lees de 100 en 100 caracteres.
+
+	¿Para qué sirve? La función read() necesita saber cuántos bytes debe intentar leer de golpe.
+
+
+## read()
+
+	Lee datos desde un file descriptor (un archivo, el teclado, etc.) y los mete en un buffer (un trozo de memoria que tú le das).
+
+		ssize_t read(int fildes, void *buf, size_t nbyte);
+
+	int fildes (file descriptor):  Si le pasas un fd inválido (negativo o cerrado), read devuelve -1.
+	void *buf (buffer): Es la dirección de memoria donde read va a escribir los datos que lea. Hay que haber hecho malloc antes para reservar ese espacio.
+	size_t nbyte: Es el máximo de bytes que quieres leer de golpe. `BUFFER_SIZE`
+
+### ¿Qué devuelve read()? (tipo ssize_t)
+* `Número > 0`: Cuántos bytes ha leído realmente. Ejemplo: pides 10, pero solo quedan 3 en el archivo → devuelve 3.
+* `0`: Has llegado al final del archivo (EOF). No hay más datos.
+* `-1`: Ha ocurrido un error (archivo cerrado, fd inválido, etc.).
+
+Porque read puede devolver valores grandes (archivos enormes) y también -1 (error). ssize_t es el tipo "con signo" diseñado específicamente para esto.
+
+
+
+
+
+
 
 
 
@@ -51,10 +95,18 @@ El valor de retorno de open() es un descriptor de archivo, un entero pequeño y 
 			fd = open("text.txt", O_RDONLY);
 		}
 
-## read ()
+### read ()
+
+Es la función del sistema que lee bytes desde un file descriptor (fd) hacia un buffer en memoria. Viene de la cabecera <unistd.h>.
+
 La función está prototipada de esta manera:
 
 		ssize_t read(int fildes, void *buf, size_t nbyte);
+
+Retorna:
+* `1`: número de bytes leídos.
+* `0`: EOF (final del archivo).
+* `-1` : error (ej: descriptor inválido, interrupción, etc.).
 
 Esta función intenta leer nbytebytes de datos del objeto referenciado por el descriptor fildesen el búfer apuntado por buf. La función read() comienza en la posición dada por el puntero asociado a fildes. Al final, el puntero se incrementa según el número de bytes ( nbyte) leídos.
 

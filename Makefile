@@ -14,14 +14,10 @@ GREEN := \033[0;32m
 
 RED := \033[31m
 
-NAME	=	libftprintf.a
+NAME	=	get_next_line.a
 
-SRC		=	ft_printf.c\
-			ft_printf_c_s.c\
-			ft_printf_d_i.c\
-			ft_printf_p.c\
-			ft_printf_u.c\
-			ft_printf_x_x.c
+SRC		=	get_next_line.c\
+			get_next_line_utils.c
 
 
 OBJ		=	$(SRC:.c=.o)
@@ -50,8 +46,6 @@ fclean:		clean
 re:			fclean	all	#recompila desde cero
 
 .PHONY: all clean fclean re
-
-TOTAL = 10
 
 # make        # Compila todo
 # make clean  # Borra objetos
