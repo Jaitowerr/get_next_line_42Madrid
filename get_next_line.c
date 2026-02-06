@@ -3,18 +3,85 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aitorres <aitorres@student.42madrid.c      +#+  +:+       +#+        */
+/*   By: aitorres <aitorres@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 18:39:24 by aitorres          #+#    #+#             */
-/*   Updated: 2026/02/04 18:39:27 by aitorres         ###   ########.fr       */
+/*   Updated: 2026/02/06 20:15:42 by aitorres         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
+char    *limpiar_static(char *linea_completa)
+{
+	char	*sobrante;
+	int	i;
+	
+	i = 0;
+	while (linea_completa[i] && linea_completa[i] != '\n')
+		i++;
+	if (!linea_completa[i] || !linea_completa[i + 1])
+		return (NULL);
+	sobrante = ft_strdup_gnl(&linea_completa[i + 1]);
+	return (sobrante);
+}
+
+char    *get_next_line(int fd)
+{
+	static char *static_acumulado;
+	char		*buffer;
+	char		*linea;
+	ssize_t		bytes_read;
+
+	if (fd < 0 || BUFFER_SIZE <= 0)
+	{
+		// printf("%d", BUFFER_SIZE);
+		return (NULL);
+	}
+	linea = static_acumulado;
+	static_acumulado = NULL; 
+	buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	if (!buffer)
+		return (NULL);
+	bytes_read = 1;
+	while (ft_strchr_gnl(linea, '\n') == NULL && bytes_read > 0)
+	{
+		bytes_read = read(fd, buffer, BUFFER_SIZE);
+		if (bytes_read < 0 )
+		{
+			free(buffer);
+			free(linea);
+			return (NULL);
+		}
+		buffer[bytes_read] = '\0';
+		linea = ft_strjoin_gnl(linea, buffer);
+	}
+	free(buffer);
+	if (!linea || *linea == '\0')
+	{
+		free(linea);
+		return (NULL);
+	}
+	static_acumulado = limpiar_static(linea);
+	linea = stop_jump_gnl(linea);
+	return (linea);
+}
 
 
 
+
+
+//clear && cc -Wall -Werror -Wextra -D BUFFER_SIZE=10 get_next_line.c get_next_line_utils.c main.c -o gnl_test && ./gnl_test
+
+
+
+// una temporal
+// hacer join con la temporal
+// luego cuando haya salto n almacenar en static
+// luego recortar static
+// si static tiene algo imprimir static mas el siguiente read
+
+/*
 
 size_t	ft_strlen_gnl(const char *string)
 {
@@ -72,21 +139,21 @@ char	*ft_strchr_gnl(const char *s, int c)
 	return (NULL);
 }
 
-char	*stop_jump_gnl(char *acumulado)
+char	*stop_jump_gnl(char *temp_acumulado)
 {
 	int		i;
 	int		len;
 	char	*jump;
 
-	if (!acumulado)
+	if (!temp_acumulado)
 		return (NULL);
 
-	jump = ft_strchr_gnl(acumulado, '\n');
+	jump = ft_strchr_gnl(temp_acumulado, '\n');
 
 	if (jump)
-		len = jump - acumulado + 1;
+		len = jump - temp_acumulado + 1;
 	else
-		len = ft_strlen_gnl(acumulado);
+		len = ft_strlen_gnl(temp_acumulado);
 	
 	jump = malloc(sizeof(char) * (len + 1));
 	if (!jump)
@@ -95,20 +162,50 @@ char	*stop_jump_gnl(char *acumulado)
 	i = 0;
 	while (i < len)
 	{
-		jump[i] = acumulado[i];
+		jump[i] = temp_acumulado[i];
 		i++;
 	}
 	jump[i] = '\0';
 	return (jump);
 }
 
+char	*limpiar_static(char *static_acumulado)
+{
+	int	i;
+	int	j;
+	char *str;
+	
+	i = 0;
+	while (static_acumulado[i] && static_acumulado[i] != '\n')
+		i++;
+	
+	if (!static_acumulado[i])
+	{
+		free(static_acumulado);
+		return (NULL);
+	}
+	
+	str = malloc(sizeof(char *) * ft_strlen_gnl(static_acumulado) - i);
+	if (!str)
+		return (NULL);
+	
+	j = 0;
+	while (static_acumulado[i])
+		str[j++] = static_acumulado[++i];
+	str[j] = '\0';
+	free (static_acumulado);
+	return (str);		
 
+	
+}
 
 char	*get_next_line(int fd)
 {
-	static char	*acumulado;	//donde acumulamos lo que leemos
+	static char	*static_acumulado;	//donde acumulamos la ultima lectura
+	char		*linea;
 	char		*buffer;	//temporal para leer del archivo
 	ssize_t		bytes_read;	//guarda cuántos bytes ha leído read() en cada vuelta.
+	int			i;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
@@ -116,35 +213,51 @@ char	*get_next_line(int fd)
 	if (!buffer)
 		return (NULL);
 
-	if (!acumulado)
-	{
-		acumulado = malloc(sizeof(char) * 1);
-		if (!acumulado)
-			return (NULL);
-		acumulado[0] = '\0';
-	}
+	// if (!static_acumulado)
+	// {
+	// 	static_acumulado = malloc(sizeof(char) * 1);
+	// 	if (!static_acumulado)
+	// 		return (NULL);
+	// 	static_acumulado[0] = '\0';
+	// }
+	linea = malloc(1);
+	if (!linea)
+		return (NULL);
+	linea[0] = '\0';
+	
 
+	i = 0;
 	bytes_read = 1;
 
-	while (ft_strchr_gnl(acumulado, '\n') == NULL && bytes_read != 0)
+	while (ft_strchr_gnl(linea, '\n') == NULL && bytes_read >= 0)
 	{
 		bytes_read = read(fd, buffer, BUFFER_SIZE);		//devuelve cuántos bytes leyó, -1 si hay un error.
-		if (bytes_read == -1)
-		{
+				{
 			free (buffer);
-			if (acumulado)
+			if (static_acumulado)
 			{
-				free (acumulado);
-				acumulado = NULL;
+				free (static_acumulado);
+				static_acumulado = NULL;
 			}
 			return (NULL);
 		}
 		buffer[bytes_read] = '\0';
-		acumulado = ft_strjoin_gnl(acumulado, buffer);
+		if (ft_strchr(buffer, '\n') != NULL)
+		{
+			static_acumulado = malloc(sizeof(char) * ft_strlen_gnl(static_acumulado - buffer) + 1);
+			i = ft_strlen_gnl(static_acumulado);
+			static_acumulado[i] = '\0';
+		}
+		linea = ft_strjoin_gnl(linea, buffer);
+		
+	
+		
+		
 	}
 	free(buffer);
-	return (stop_jump_gnl(acumulado));
+	linea = stop_jump_gnl(static_acumulado);
+	static_acumulado = limpiar_static(static_acumulado);
+	// static_acumulado = linea;
+	return (linea);
 }
-
-
-//clear && cc -Wall -Werror -Wextra -D BUFFER_SIZE=10 get_next_line.c main.c -o gnl_test && ./gnl_test
+	*/

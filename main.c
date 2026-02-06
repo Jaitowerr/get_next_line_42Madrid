@@ -7,17 +7,24 @@ int main(void)
 	int		fd;
 	char	*line;
 
-	fd = open("test.txt", O_RDONLY);
+	fd = open("1char.txt", O_RDONLY);
 	if (fd == -1)
 	{
 		printf("Error al abrir el archivo\n");
 		return (1);
 	}
-	
-	line = get_next_line(fd);
-	printf("Resultado: %s\n", line);
+	while ((line = get_next_line(fd)))
+	{
+		printf("Resultado: %s", line);
+		free(line);
+	}
+	//line = get_next_line(fd);
+	printf("Resultado tras EOF: %s", line);
 	free(line);
-	
+	line = get_next_line(fd);
+	printf("Resultado tras EOF++: %s", line);	
+	free(line);
+
 	close(fd);
 	return (0);
 }
