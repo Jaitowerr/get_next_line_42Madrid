@@ -1,119 +1,161 @@
+*Este proyecto ha sido creado como parte del currículo de 42 por aitorres*
+
 # 📖 Get_next_line
 
-## Descripción
+# Descripción
 
-Este proyecto trata sobre la creación de una función que permite leer una línea de un archivo descriptor de una sola vez.
-
-La función recibe un descriptor de archivo y devolvera la siguiente línea del archivo como una cadena de caracteres terminada en null o `\n`.
+El proyecto Get Next Line (GNL) es un ejercicio fundamental en la formación de 42 Madrid que consiste en implementar una función en C capaz de leer un archivo línea por línea. Esta función, llamada get_next_line, debe gestionar la lectura de manera eficiente utilizando un buffer de tamaño configurable y manejar correctamente la memoria dinámica.
 
 <b>Prototipo de la función:</b>
 
-
 	char	*get_next_line(int fd)
 
-En esta función le enviamos el `int fd` (File Descriptor). Un fd es simplemente un número entero que el sistema operativo usa para identificar un canal de comunicación abierto:
+Cadaa función recibe un descriptor de archivo (fd) y devuelve la siguiente línea completa, incluyendo el salto de línea `\n` si existe. Cuando se alcanza el final del archivo o ocurre un error, la función devuelve `NULL`.
 
-* `0` (Standard Input / stdin): Es el teclado. Si lees de aquí, el programa espera a que escribas algo.
-* `1` (Standard Output / stdout): Es la pantalla (salida normal).
-* `2` (Standard Error / stderr): Es la pantalla también, pero reservada para mensajes de error.
-* `3` en adelante: Son archivos que tú abres con la función open(). Por ejemplo, si abres texto.txt, el sistema te dará el fd 3. Si abres otro, el 4, y así.
+Internamente, utiliza una variable estática para almacenar los datos sobrantes de la lectura anterior, permitiendo continuar donde se dejó en la siguiente llamada.
 
-Dentro de nuestra función utilizaremos variables `static`.
+## Objetivos del proyecto
 
-El comportamiento de la función puede depender de varios factores, si el fd que le enviamos es `v0`y BUFFER_SIZE `<= 0`entonces devolvemos NULL;
+* Comprender el manejo de descriptores de archivo en C.
+* Practicar la gestión dinámica de memoria con malloc y free.
+* Implementar una función que mantenga el estado entre llamadas usando variables estáticas.
+* Leer archivos de texto línea a línea, incluyendo líneas largas que superen el tamaño del buffer.
+* Manejar correctamente los saltos de línea y el final del archivo.
+* Evitar fugas de memoria y errores de acceso.
 
-
-* ### ¿Qué es el BUFFER_SIZE?
-
-	Si BUFFER_SIZE=1, lees el archivo letra a letra (muy lento).
-
-	Si BUFFER_SIZE=100, lees de 100 en 100 caracteres.
-
-	¿Para qué sirve? La función read() necesita saber cuántos bytes debe intentar leer de golpe.
+<hr><hr><br>
 
 
-## read()
+## 💡Conceptos Clave
 
-	Lee datos desde un file descriptor (un archivo, el teclado, etc.) y los mete en un buffer (un trozo de memoria que tú le das).
+### 1. File Descriptors (fd)
 
-		ssize_t read(int fildes, void *buf, size_t nbyte);
+Un fd es un número entero que el sistema operativo usa para identificar un canal de comunicación abierto:
 
-	int fildes (file descriptor):  Si le pasas un fd inválido (negativo o cerrado), read devuelve -1.
-	void *buf (buffer): Es la dirección de memoria donde read va a escribir los datos que lea. Hay que haber hecho malloc antes para reservar ese espacio.
-	size_t nbyte: Es el máximo de bytes que quieres leer de golpe. `BUFFER_SIZE`
+* 0 (Standard Input): Teclado.
+* 1 (Standard Output): Pantalla.
+* 2 (Standard Error): Pantalla (errores).
+* 3 en adelante: Archivos abiertos con open().
+<br><br><hr>
 
-### ¿Qué devuelve read()? (tipo ssize_t)
-* `Número > 0`: Cuántos bytes ha leído realmente. Ejemplo: pides 10, pero solo quedan 3 en el archivo → devuelve 3.
-* `0`: Has llegado al final del archivo (EOF). No hay más datos.
-* `-1`: Ha ocurrido un error (archivo cerrado, fd inválido, etc.).
+### 2. ¿Qué es el BUFFER_SIZE?
 
-Porque read puede devolver valores grandes (archivos enormes) y también -1 (error). ssize_t es el tipo "con signo" diseñado específicamente para esto.
+Es la cantidad de bytes que la función read() intenta leer de golpe.
 
-
-
-
-
-
+* Si BUFFER_SIZE=1: Lee letra a letra (muy lento).
+* Si BUFFER_SIZE=100: Lee de 100 en 100 caracteres.
+* Caso de error: Si el fd es inválido o BUFFER_SIZE <= 0, la función devuelve NULL.
+<br><br><hr>
 
 
+### 3. Variables Estáticas (static)
 
-## open ()
+Se utilizan para que la función "recuerde" lo que leyó en la llamada anterior. A diferencia de una variable local normal, una static no se destruye cuando la función termina.
 
-Para que la función funcione, primero debes implementar la siguiente biblioteca
+<hr><hr><br><br>
 
-		#include <fcntl.h>
+## 🛠️ Funciones del Sistema Utilizadas
 
-Esta función le permitirá abrir y acceder a un archivo. Su prototipo es el siguiente:
+### open()
+Para usarla necesitas `#include <fcntl.h>`. Permite abrir un archivo y obtener su fd.
+
+Flags comunes:
+
+	O_RDONLY (Solo lectura)
+	O_WRONLY (Solo escritura)
+	O_RDWR (Lectura y escritura).
+
+* Retorno: El fd (entero positivo) o -1 si hay error.
 
 
-### Copiar
-int open (const char* path, int flags [, int mode ]);
-###const char* path
-Corresponde al título del archivo que desea abrir/crear.
+### read()
 
-También se refiere a la ubicación del archivo. Si no trabaja en el mismo directorio que el archivo, puede proporcionar una ruta absoluta que comience con "/".
+Viene de `#include <unistd.h>`. Lee datos desde un fd hacia un buffer.
 
-### int flags [, int mode ]
-Debes indicarle a tu función el tipo de acceso que deseas. Esto se hace mediante indicadores. Aquí está la lista con la información de cada indicador:
+	ssize_t read(int fd, void *buf, size_t count);
 
-* O_RDONLY : En modo de solo lectura, abre el archivo.
+* Retorno (> 0):  Número de bytes leídos realmente.
 
-* O_WRONLY : En modo de solo escritura, abre el archivo
+* Retorno (0): Final del archivo (EOF).
 
-* O_RDWR : Abre el archivo en modo de lectura y escritura
+* Retorno (-1): Error.
 
-* O_CREAT : Esta bandera se aplica para crear un archivo si no existe en la ruta o directorio especificado
+<br><hr><hr><br><br>
 
-* O_EXCL : Evita la creación de un archivo si ya existe en el directorio o ubicación.
 
-### Valor de retorno
-El valor de retorno de open() es un descriptor de archivo, un entero pequeño y no negativo que sirve de índice a una entrada en la tabla de descriptores de archivos abiertos del proceso. Si se produce un error, la función devolverá -1 como sinónimo de fallo.
+# INSTRUCCIONES
+Instrucciones para compilar y ejecutar el programa de prueba de get_next_line, lee atentatemente, es responsabilidad del rpogramador que lo utilice, en leer las instrucciones para su correcto funcionameinto.
+<br><br>
 
-		int main()
-		{
-			int fd;
-			fd = open("text.txt", O_RDONLY);
-		}
+## 1. Compilar
 
-### read ()
+Abre una terminal en la carpeta donde están los archivos y ejecuta el siguiente comando para compilar el programa de prueba junto con la implementación de get_next_line y sus utilidades:
 
-Es la función del sistema que lee bytes desde un file descriptor (fd) hacia un buffer en memoria. Viene de la cabecera <unistd.h>.
+	gcc -Wall -Wextra -Werror -D BUFFER_SIZE=42 get_next_line.c get_next_line_utils.c main.c -o gnl_test
 
-La función está prototipada de esta manera:
+* Puedes cambiar el valor de BUFFER_SIZE para probar diferentes tamaños de buffer.
+* Asegúrate de que main.c contiene el código de prueba que llama a get_next_line con el archivo prueba.txt.
+`---`
+<br><br>
+## 2. Crear el archivo de prueba
 
-		ssize_t read(int fildes, void *buf, size_t nbyte);
+Crea un archivo llamado `prueba.txt` en la misma carpeta con el siguiente contenido para probar diferentes casos.
 
-Retorna:
-* `1`: número de bytes leídos.
-* `0`: EOF (final del archivo).
-* `-1` : error (ej: descriptor inválido, interrupción, etc.).
-
-Esta función intenta leer nbytebytes de datos del objeto referenciado por el descriptor fildesen el búfer apuntado por buf. La función read() comienza en la posición dada por el puntero asociado a fildes. Al final, el puntero se incrementa según el número de bytes ( nbyte) leídos.
-
+Escribe lo que quieras en él, puedes escribir o copiar en él El Quijote.
 <br><br>
 
 
+## 3. Ejecutar
+
+Ejecuta el programa compilado con:
+
+	./gnl_test
+
+Si utilizas el main facilitado por el programador aitorres, el programa leerá prueba.txt línea a línea y lo mostrará en pantalla.
+<br><br>
+
+## 4. Liberar memoria
+
+Recuerda que cada línea devuelta por get_next_line debe ser liberada con free() para evitar fugas de memoria.
+<br><br>
+
+## 5. Comprobar fugas de memoria
+
+Puedes usar valgrind para verificar que no haya fugas de memoria
+
+	valgrind --leak-check=full ./gnl_test
 
 
+<br><br>
 
-## Static variables
+Por si quedan dudas, te muestro el main con cada iteración
+
+	int	main(void)
+	{
+		int		fd;
+		char	*line;
+		int		i;
+		
+		printf("--- Iniciando lectura de prueba.txt ---\n");
+
+		while ((line = get_next_line(fd)) != NULL)
+		{
+			printf("Línea [%d]-->%s", i, line);
+			free(line);  // ¡Muy importante liberar la memoria! --> Leer el Readme, contiene INSTRUCCIONES en README exigidas por 42Madrid.
+			i++;
+		}
+
+		close(fd);
+		printf("\n--- Fin de la lectura ---\n");
+		return (0);
+	}
+
+<br><hr><hr><br><br>
+
+## 📚 Recursos y Uso de IA
+
+
+*   Distintas fuentes de internet, guia 42, paginas de google, videos de youtube.
+*   **Man pages:** `man 2 read`, `man 2 open`, `man 2 close`.
+*   **Tutoriales de 42:** Guías de la comunidad sobre el uso de variables estáticas y gestión de memoria en C.
+* Páginas de IA como Gémini o Claude Sonnet para ayuda en construccion de reducción de funciones tras fallos y muchas dudas, y organizando los conceptos teóricos (fd, static, read) de forma pedagógica. Resolución de dudas conceptuales sobre la librería `<fcntl.h>` y el comportamiento de los flags de apertura de archivos.
