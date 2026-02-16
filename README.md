@@ -91,7 +91,7 @@ Instrucciones para compilar y ejecutar el programa de prueba de get_next_line, l
 
 Abre una terminal en la carpeta donde están los archivos y ejecuta el siguiente comando para compilar el programa de prueba junto con la implementación de get_next_line y sus utilidades:
 
-	gcc -Wall -Wextra -Werror -D BUFFER_SIZE=42 get_next_line.c get_next_line_utils.c main.c -o gnl_test
+	cc -Wall -Wextra -Werror -D BUFFER_SIZE=42 get_next_line.c get_next_line_utils.c main.c -o gnl_test
 
 * Puedes cambiar el valor de BUFFER_SIZE para probar diferentes tamaños de buffer.
 * Asegúrate de que main.c contiene el código de prueba que llama a get_next_line con el archivo prueba.txt.
