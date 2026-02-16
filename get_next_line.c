@@ -37,6 +37,7 @@ static char	*leer_y_acumular(int fd, char *acum_linea, char *buffer)
 		if (bytes_read < 0)
 		{
 			free(acum_linea);
+			acum_linea = NULL;
 			return (NULL);
 		}
 		buffer[bytes_read] = '\0';
@@ -56,8 +57,12 @@ char	*get_next_line(int fd)
 	char		*linea;
 	char		*buffer;
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
+	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) < 0)
+	{
+		free(acum_line);
+		acum_line = NULL;
 		return (NULL);
+	}
 	buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (!buffer)
 		return (NULL);

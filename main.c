@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aitorres <aitorres@student.42madrid.com    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/02/16 23:55:13 by aitorres          #+#    #+#             */
+/*   Updated: 2026/02/17 00:25:24 by aitorres         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "get_next_line.h"
 #include <stdio.h>
 
@@ -8,7 +20,7 @@ int	main(void)
 	int		i;
 
 	i = 1;
-	fd = open("prueba.txt", O_RDONLY); // Abrimos el archivo prueba.txt en modo solo lectura
+	fd = open("1char.txt", O_RDONLY); // Abrimos el archivo prueba.txt en modo solo lectura
 	if (fd == -1)
 	{
 		printf("Error al abrir el archivo");

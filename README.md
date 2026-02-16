@@ -149,6 +149,23 @@ Por si quedan dudas, te muestro el main con cada iteración
 		printf("\n--- Fin de la lectura ---\n");
 		return (0);
 	}
+<br><br>
+
+## 6. 🛡️ Robustez y Gestión de Errores
+
+Para asegurar que el programa no tenga fugas de memoria (**Memory Leaks**) ni punteros colgantes (**Dangling Pointers**), la implementación sigue esta lógica de control:
+
+| Situación | Acción en el Código | Resultado |
+| :--- | :--- | :--- |
+| **Fallo en `read()`** | Se libera la variable estática y se retorna `NULL`. | `acum_line` queda a `NULL`, evitando punteros inválidos. |
+| **Fallo en `malloc` (`strjoin`)** | La función `ft_strjoin_gnl` libera el parámetro `s1` antes de retornar `NULL`. | Se evita la fuga de la memoria acumulada hasta ese momento. |
+| **Final de Archivo (EOF)** | Se procesa el último tramo y se libera la estática en la última llamada. | Limpieza total del heap al terminar la lectura. |
+| **Línea devuelta al usuario** | La función `stop_jump_gnl` libera la cadena original y devuelve solo la línea necesaria. | Gestión eficiente de la memoria dinámica. |
+| **Uso de `BUFFER_SIZE`** | Se reserva memoria dinámicamente para el buffer en cada llamada y se libera al final. | El programa es independiente del tamaño del buffer definido al compilar. |
+
+<br><br>
+
+> **Nota para los evaluadores:** Las funciónes como `ft_strjoin_gnl` ha sido diseñada específicamente modificando la original para este proyecto, encargándose de liberar la memoria del acumulador anterior (`s1`) automáticamente en cada concatenación, simplificando así el flujo principal y previniendo fugas.
 
 <br><hr><hr><br><br>
 
