@@ -6,55 +6,55 @@
 /*   By: aitorres <aitorres@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 18:39:24 by aitorres          #+#    #+#             */
-/*   Updated: 2026/02/16 13:52:52 by aitorres         ###   ########.fr       */
+/*   Updated: 2026/02/17 14:46:29 by aitorres         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-char	*limpiar_static(char *linea_completa)
+char	*limpiar_static(char *line_completa)
 {
 	char	*sobrante;
 	int		i;
 
 	i = 0;
-	while (linea_completa[i] && linea_completa[i] != '\n')
+	while (line_completa[i] && line_completa[i] != '\n')
 		i++;
-	if (!linea_completa[i] || !linea_completa[i + 1])
+	if (!line_completa[i] || !line_completa[i + 1])
 		return (NULL);
-	sobrante = ft_strdup_gnl(&linea_completa[i + 1]);
+	sobrante = ft_strdup_gnl(&line_completa[i + 1]);
 	return (sobrante);
 }
 
-static char	*leer_y_acumular(int fd, char *acum_linea, char *buffer)
+static char	*read_and_accumulate(int fd, char *acum_line, char *buffer)
 {
 	ssize_t	bytes_read;
 
 	bytes_read = 1;
-	while (ft_strchr_gnl(acum_linea, '\n') == NULL && bytes_read > 0)
+	while (ft_strchr_gnl(acum_line, '\n') == NULL && bytes_read > 0)
 	{
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
 		if (bytes_read < 0)
 		{
-			free(acum_linea);
-			acum_linea = NULL;
+			free(acum_line);
+			acum_line = NULL;
 			return (NULL);
 		}
 		buffer[bytes_read] = '\0';
-		acum_linea = ft_strjoin_gnl(acum_linea, buffer);
+		acum_line = ft_strjoin_gnl(acum_line, buffer);
 	}
-	if (!acum_linea || *acum_linea == '\0')
+	if (!acum_line || *acum_line == '\0')
 	{
-		free(acum_linea);
+		free(acum_line);
 		return (NULL);
 	}
-	return (acum_linea);
+	return (acum_line);
 }
 
 char	*get_next_line(int fd)
 {
 	static char	*acum_line;
-	char		*linea;
+	char		*line;
 	char		*buffer;
 
 	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) < 0)
@@ -66,14 +66,14 @@ char	*get_next_line(int fd)
 	buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (!buffer)
 		return (NULL);
-	linea = leer_y_acumular(fd, acum_line, buffer);
+	line = read_and_accumulate(fd, acum_line, buffer);
 	free(buffer);
-	if (!linea)
+	if (!line)
 	{
 		acum_line = NULL;
 		return (NULL);
 	}
-	acum_line = limpiar_static(linea);
-	linea = stop_jump_gnl(linea);
-	return (linea);
+	acum_line = limpiar_static(line);
+	line = stop_jump_gnl(line);
+	return (line);
 }

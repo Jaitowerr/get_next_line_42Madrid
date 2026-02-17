@@ -6,54 +6,55 @@
 /*   By: aitorres <aitorres@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/12 17:06:13 by aitorres          #+#    #+#             */
-/*   Updated: 2026/02/13 19:42:45 by aitorres         ###   ########.fr       */
+/*   Updated: 2026/02/17 15:21:10 by aitorres         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line_bonus.h"
 
-char	*limpiar_static_bonus(char *linea_completa)
+char	*limpiar_static_bonus(char *line_completa)
 {
 	char	*sobrante;
 	int		i;
 
 	i = 0;
-	while (linea_completa[i] && linea_completa[i] != '\n')
+	while (line_completa[i] && line_completa[i] != '\n')
 		i++;
-	if (!linea_completa[i] || !linea_completa[i + 1])
+	if (!line_completa[i] || !line_completa[i + 1])
 		return (NULL);
-	sobrante = ft_strdup_gnl_bonus(&linea_completa[i + 1]);
+	sobrante = ft_strdup_gnl_bonus(&line_completa[i + 1]);
 	return (sobrante);
 }
 
-static char	*leer_y_acumular_bonus(int fd, char *linea, char *buffer)
+static char	*read_and_accumulate_bonus(int fd, char *acum_linea, char *buffer)
 {
 	ssize_t	bytes_read;
 
 	bytes_read = 1;
-	while (ft_strchr_gnl_bonus(linea, '\n') == NULL && bytes_read > 0)
+	while (ft_strchr_gnl_bonus(acum_linea, '\n') == NULL && bytes_read > 0)
 	{
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
 		if (bytes_read < 0)
 		{
-			free(linea);
+			free(acum_linea);
+			acum_linea = NULL;
 			return (NULL);
 		}
 		buffer[bytes_read] = '\0';
-		linea = ft_strjoin_gnl_bonus(linea, buffer);
+		acum_linea = ft_strjoin_gnl_bonus(acum_linea, buffer);
 	}
-	if (!linea || *linea == '\0')
+	if (!acum_linea || *acum_linea == '\0')
 	{
-		free(linea);
+		free(acum_linea);
 		return (NULL);
 	}
-	return (linea);
+	return (acum_linea);
 }
 
 char	*get_next_line(int fd)
 {
 	static char	*acum_line[1024];
-	char		*linea;
+	char		*line;
 	char		*buffer;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
@@ -61,14 +62,14 @@ char	*get_next_line(int fd)
 	buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (!buffer)
 		return (NULL);
-	linea = leer_y_acumular_bonus(fd, acum_line[fd], buffer);
+	line = read_and_accumulate_bonus(fd, acum_line[fd], buffer);
 	free(buffer);
-	if (!linea)
+	if (!line)
 	{
 		acum_line[fd] = NULL;
 		return (NULL);
 	}
-	acum_line[fd] = limpiar_static_bonus(linea);
-	linea = stop_jump_gnl_bonus(linea);
-	return (linea);
+	acum_line[fd] = limpiar_static_bonus(line);
+	line = stop_jump_gnl_bonus(line);
+	return (line);
 }

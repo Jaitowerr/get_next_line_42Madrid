@@ -6,7 +6,7 @@
 /*   By: aitorres <aitorres@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 18:44:56 by aitorres          #+#    #+#             */
-/*   Updated: 2026/02/13 19:42:33 by aitorres         ###   ########.fr       */
+/*   Updated: 2026/02/17 15:22:52 by aitorres         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,8 @@
 # endif
 
 // FUNCIONES
-char			*limpiar_static_bonus(char *linea_grande);
-char			*stop_jump_gnl_bonus(char *linea);
+char			*limpiar_static_bonus(char *line_grande);
+char			*stop_jump_gnl_bonus(char *line);
 char			*ft_strchr_gnl_bonus(const char *s, int c);
 char			*ft_strjoin_gnl_bonus(char const *s1, char const *s2);
 char			*ft_strdup_gnl_bonus(const char *s1);

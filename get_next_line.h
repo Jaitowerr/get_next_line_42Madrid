@@ -6,7 +6,7 @@
 /*   By: aitorres <aitorres@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 18:44:56 by aitorres          #+#    #+#             */
-/*   Updated: 2026/02/16 13:52:38 by aitorres         ###   ########.fr       */
+/*   Updated: 2026/02/17 14:46:31 by aitorres         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,8 @@
 
 // FUNCIONES
 char			*get_next_line(int fd);
-char			*limpiar_static(char *linea_grande);
-char			*stop_jump_gnl(char *linea);
+char			*limpiar_static(char *line_grande);
+char			*stop_jump_gnl(char *line);
 char			*ft_strchr_gnl(const char *s, int c);
 char			*ft_strjoin_gnl(char const *s1, char const *s2);
 char			*ft_strdup_gnl(const char *s1);

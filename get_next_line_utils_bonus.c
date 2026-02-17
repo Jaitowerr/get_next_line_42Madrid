@@ -6,7 +6,7 @@
 /*   By: aitorres <aitorres@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 18:44:59 by aitorres          #+#    #+#             */
-/*   Updated: 2026/02/13 19:23:10 by aitorres         ###   ########.fr       */
+/*   Updated: 2026/02/17 14:46:39 by aitorres         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,30 +89,30 @@ char	*ft_strchr_gnl_bonus(const char *s, int c)
 	return (NULL);
 }
 
-char	*stop_jump_gnl_bonus(char *linea)
+char	*stop_jump_gnl_bonus(char *line)
 {
 	int		i;
 	char	*str;
 
-	if (!linea || !*linea)
+	if (!line || !*line)
 		return (NULL);
 	i = 0;
-	while (linea[i] && linea[i] != '\n')
+	while (line[i] && line[i] != '\n')
 		i++;
-	if (linea[i] == '\n')
+	if (line[i] == '\n')
 		i++;
 	str = malloc(sizeof(char) * (i + 1));
 	if (!str)
 		return (NULL);
 	i = 0;
-	while (linea[i] && linea[i] != '\n')
+	while (line[i] && line[i] != '\n')
 	{
-		str[i] = linea[i];
+		str[i] = line[i];
 		i++;
 	}
-	if (linea[i] == '\n')
+	if (line[i] == '\n')
 		str[i++] = '\n';
 	str[i] = '\0';
-	free(linea);
+	free(line);
 	return (str);
 }

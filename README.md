@@ -116,7 +116,11 @@ Si utilizas el main facilitado por el programador aitorres, el programa leerá p
 
 ## 4. Liberar memoria
 
-Recuerda que cada línea devuelta por get_next_line debe ser liberada con free() para evitar fugas de memoria.
+Recuerda que cada línea devuelta por get_next_line debe ser liberada con free() para evitar fugas de memoria. Revisa que cada iteración que hagas en el main para llamarlo debe tener su free correspondiente, por si queda alguna duda, así:
+
+	line = get_next_line(fd);
+	free(line);
+
 <br><br>
 
 ## 5. Comprobar fugas de memoria
@@ -164,6 +168,8 @@ Para asegurar que el programa no tenga fugas de memoria (**Memory Leaks**) ni pu
 | **Uso de `BUFFER_SIZE`** | Se reserva memoria dinámicamente para el buffer en cada llamada y se libera al final. | El programa es independiente del tamaño del buffer definido al compilar. |
 
 <br><br>
+
+**El main.c suministrado tiene dos partes, lal descrita anteriormente comentada y una mas profunda descomentada lista para ejecutar, podrá observar todos los casos de null y otros, creación de .txt automáticos para las pruebas. Eso si, siempre sigue las instrucciones liberando memoria tras imprimir cada linea
 
 > **Nota para los evaluadores:** Las funciónes como `ft_strjoin_gnl` ha sido diseñada específicamente modificando la original para este proyecto, encargándose de liberar la memoria del acumulador anterior (`s1`) automáticamente en cada concatenación, simplificando así el flujo principal y previniendo fugas.
 
