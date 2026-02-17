@@ -12,7 +12,7 @@ int	main(void)
 	int		i;
 
 	i = 1;
-	fd = open("1char.txt", O_RDONLY); // Abrimos el archivo prueba.txt en modo solo lectura
+	fd = open("prueba.txt", O_RDONLY); // Abrimos el archivo prueba.txt en modo solo lectura
 	if (fd == -1)
 	{
 		printf("Error al abrir el archivo");
