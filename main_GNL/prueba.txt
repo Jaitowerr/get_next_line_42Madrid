@@ -1,0 +1,9 @@
+Hola, este es el primer test de GNL.
+42 Madrid es genial.
+1234567890
+
+Esta línea viene después de un salto de línea vacío.
+	Esta línea empieza con un tabulador.
+Una línea muy corta.
+Esta es una línea extremadamente larga para probar si el BUFFER_SIZE funciona correctamente cuando la línea supera el tamaño del buffer configurado en la compilación.
+Última línea sin salto de línea al final.
