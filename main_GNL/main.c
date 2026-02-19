@@ -2,9 +2,9 @@
 
 
 
-/* #include "get_next_line.h"
+#include "get_next_line.h"
 #include <stdio.h>
-
+/*
 int	main(void)
 {
 	int		fd;
@@ -21,6 +21,11 @@ int	main(void)
 
 	printf("--- Iniciando lectura de prueba.txt ---\n");
 
+ 		//printf("Línea [%d]-->%s", i, line = get_next_line(fd));
+        //free(line);
+		//printf("Línea [%d]-->%s", i, line = get_next_line(fd));
+        //free(line); 
+
 	while ((line = get_next_line(fd)) != NULL)
 	{
 		printf("Línea [%d]-->%s", i, line);
@@ -32,8 +37,8 @@ int	main(void)
 	printf("\n--- Fin de la lectura ---\n");
 	return (0);
 }
-
-//cc -Wall -Wextra -Werror -D BUFFER_SIZE=42 get_next_line.c get_next_line_utils.c main.c -o gnl_test */
+ */
+//cc -Wall -Wextra -Werror -D BUFFER_SIZE=42 get_next_line.c get_next_line_utils.c main.c -o gnl_test 
 
 
 
@@ -136,7 +141,7 @@ int main(void)
 	close(fd2);
 
 	return (0);
-} 
+}  
 
 //cc -Wall -Wextra -Werror -D BUFFER_SIZE=42 get_next_line.c get_next_line_utils.c main.c -o gnl_test
 

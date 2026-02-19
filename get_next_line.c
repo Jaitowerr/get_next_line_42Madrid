@@ -6,24 +6,24 @@
 /*   By: aitorres <aitorres@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 18:39:24 by aitorres          #+#    #+#             */
-/*   Updated: 2026/02/17 14:46:29 by aitorres         ###   ########.fr       */
+/*   Updated: 2026/02/19 14:23:32 by aitorres         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-char	*limpiar_static(char *line_completa)
+char	*clear_static(char *complete_line)
 {
-	char	*sobrante;
+	char	*spare;
 	int		i;
 
 	i = 0;
-	while (line_completa[i] && line_completa[i] != '\n')
+	while (complete_line[i] && complete_line[i] != '\n')
 		i++;
-	if (!line_completa[i] || !line_completa[i + 1])
+	if (!complete_line[i] || !complete_line[i + 1])
 		return (NULL);
-	sobrante = ft_strdup_gnl(&line_completa[i + 1]);
-	return (sobrante);
+	spare = ft_strdup_gnl(&complete_line[i + 1]);
+	return (spare);
 }
 
 static char	*read_and_accumulate(int fd, char *acum_line, char *buffer)
@@ -46,6 +46,7 @@ static char	*read_and_accumulate(int fd, char *acum_line, char *buffer)
 	if (!acum_line || *acum_line == '\0')
 	{
 		free(acum_line);
+		acum_line = NULL;
 		return (NULL);
 	}
 	return (acum_line);
@@ -57,10 +58,8 @@ char	*get_next_line(int fd)
 	char		*line;
 	char		*buffer;
 
-	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) < 0)
+	if (fd < 0 || BUFFER_SIZE <= 0)
 	{
-		free(acum_line);
-		acum_line = NULL;
 		return (NULL);
 	}
 	buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
@@ -73,7 +72,7 @@ char	*get_next_line(int fd)
 		acum_line = NULL;
 		return (NULL);
 	}
-	acum_line = limpiar_static(line);
+	acum_line = clear_static(line);
 	line = stop_jump_gnl(line);
 	return (line);
 }
